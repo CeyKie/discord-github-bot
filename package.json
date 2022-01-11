@@ -1,0 +1,32 @@
+{
+  "name": "discord-github-bot",
+  "version": "0.0.1-Alpha",
+  "description": "This is a bot, which allows a user to write an issue into a discord channel, which will create a github issue and afterwards deletes the message from the channel to keep the discord issue channel clean.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CeyKie/discord-github-bot.git"
+  },
+  "keywords": [
+    "discord",
+    "github",
+    "bot",
+    "issue",
+    "bugreport",
+    "bug",
+    "report"
+  ],
+  "author": "Ceylan Kiesewetter",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CeyKie/discord-github-bot/issues"
+  },
+  "homepage": "https://github.com/CeyKie/discord-github-bot#readme",
+  "dependencies": {
+    "discord.js": "^13.5.1",
+    "request": "^2.88.2"
+  }
+}
