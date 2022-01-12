@@ -5,8 +5,8 @@ The attachments will be saved within GitHub after it fully uploaded the request 
 Therefore, it is save to delete the message afterwards. Currently, it will automatically delete the successfully read messages after 90 seconds (within Discord).<br /><br />
 To be able to read data from discord, you need to create a discord bot https://discord.com/developers/applications. <br />
 In order to use this bot, you need to set up a "config.json" in the root folder (at the level of "index.js"). You can use the `example.config.json` as a template.
-After editing you should rename the file to `config.json`. <br />
-To start the bot just type `node .` in the console in the root folder of this project.<br />
+After editing you should rename the file to `config.json`. <br /><br />
+
 ***Hint: Prevent users from overfloating your GitHub repo by enabling slow chat in the Discord channel.***
 
 ## Creating a Discord bot
@@ -31,10 +31,16 @@ To start the bot just type `node .` in the console in the root folder of this pr
 ** If you chose to let your token expire you must remember to renew it after expiration, otherwise GitHub will not grant access for the request of the bot
 * Scopes: `repo`, `write:packages`
 
+## Start the bot
+* Install NodeJS 16+
+* Execute command `npm i` in the root folder of the project
+* Set up "config.json" with required parameters
+* Start the process with `node .`
+
 ## Configuration properties
 | Property				 | Optional | Example								 | Description																														 |
 | ---------------------- | -------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| token					 | no		| "aaodj29eqdekwojd92ahe28dhadjda02dﬂ0j" | The token of the discord bot																										 |
+| token					 | no		| "aaodj29eqdekwojd92ahe28dhadjda02d√ü0j" | The token of the discord bot																										 |
 | channelId				 | no		| "84704831957103822931"				 | ID of the discord issue channel on your server																					 |
 | gitUser				 | no		| "CeyKie"							     | URL of the GIT repository, the issue should be created in																		 |
 | gitRepo				 | no		| "discord-github-bot"				     | URL of the GIT repository, the issue should be created in																		 |
