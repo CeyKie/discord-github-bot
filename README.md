@@ -4,18 +4,22 @@ You can also include the attachments from the message, by setting `includeAttach
 The attachments will be saved within GitHub after it fully uploaded the request to its servers. 
 Therefore, it is save to delete the message afterwards. Currently, it will automatically delete the successfully read messages after 90 seconds (within Discord).<br /><br />
 To be able to read data from discord, you need to create a discord bot https://discord.com/developers/applications. <br />
-In order to use this bot, you need to set up a "config.json" in the root folder (at the level of "index.js"). You can use the `example.config.json` as a template.
-After editing you should rename the file to `config.json`. <br /><br />
 
 ***Hint: Prevent users from overfloating your GitHub repo by enabling slow chat in the Discord channel.***
 
-## Creating a Discord bot
+## Requirements
+* NodeJS 16+
+* Discord bot (Guide below)
+* GitHub Account & Repository
+
+## Installation Guides
+### Creating a Discord bot
 * Simply follow the link https://discord.com/developers/applications and click on "New Application"
 * Give your bot a name and click on "Create"
 * Go to the "Bot" section where you can create a new one by clicking on "Add Bot". This creates a bot named after the application. After adding the bot you can edit the name if you like
 * Copy the token of the bot and add it to the config file
 
-## Adding the bot to your Discord server
+### Adding the bot to your Discord server
 * In the navigation of your previously created application click on "OAuth2"
 * In the sub navigation go to "URL Generator"
 * As scope you chose "bot". Afterwards the permissions section for this bot will open
@@ -23,7 +27,7 @@ After editing you should rename the file to `config.json`. <br /><br />
 * Copy the URL at the end of the site and paste it in to your browser address line
 * Add the Bot to the prefered server
 
-## Creating a GitHub token
+### Creating a GitHub token
 * Go to your settings, by clicking your profile image in the upper right corner in GitHub and choosing "settings"
 * Chose "developer settings" in the navigation of the settings
 * Click on "Personal access tokens" and "Generate new token"
@@ -31,11 +35,13 @@ After editing you should rename the file to `config.json`. <br /><br />
 ** If you chose to let your token expire you must remember to renew it after expiration, otherwise GitHub will not grant access for the request of the bot
 * Scopes: `repo`, `write:packages`
 
-## Start the bot
+### Start the bot
 * Install NodeJS 16+
 * Execute command `npm i` in the root folder of the project
-* Set up "config.json" with required parameters
+* Set up "config.json" with required parameters (you can use and rename the template of "example.config.json")
 * Start the process with `node .`
+
+<hr />
 
 ## Configuration properties
 | Property				 | Optional | Example								 | Description																														 |
