@@ -1,7 +1,7 @@
 # discord-github-bot
 This bot will create a GitHub issue, when a new message will be sent to a specific channel in discord. <br />
 You can also include the attachments from the message, by setting `includeAttachments: true`. <br />
-The attachments will be saved within GitHub after the GitHub fully uploaded the request to its servers. 
+The attachments will be saved within GitHub after it fully uploaded the request to its servers. 
 Therefore, it is save to delete the message afterwards. Currently, it will automatically delete the successfully read messages after 90 seconds.<br />
 To be able to read data from discord, you need to create a discord bot https://discord.com/developers/applications. <br />
 In order to use this bot, you need to set up a "config.json" in the root folder (at the level of "index.js"). You can use the `example.config.json` as a template.
