@@ -17,9 +17,9 @@ To be able to read data from discord, you need to create a discord bot https://d
 * Execute command `npm i` in the root folder of the project
 * Set up "config.json" with required parameters (you can use and rename the template of "example.config.json")
   * Add Discord bot token
-  * Add Discord Channel ID (which should be read)
+  * Add Discord channel ID (which should be read)
   * Add GitHub project owner
-  * Add GitHub Repo (where the issue should be created in)
+  * Add GitHub repo name (where the issue should be created in)
   * Add GitHub token for authentication
 * Start the process with `node .`
 
