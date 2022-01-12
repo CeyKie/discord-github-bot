@@ -12,6 +12,17 @@ To be able to read data from discord, you need to create a discord bot https://d
 * Discord bot (Guide below)
 * GitHub Account & Repository
 
+## Start the bot
+* Install NodeJS 16+
+* Execute command `npm i` in the root folder of the project
+* Set up "config.json" with required parameters (you can use and rename the template of "example.config.json")
+  * Add Discord bot token
+  * Add Discord Channel ID (which should be read)
+  * Add GitHub project owner
+  * Add GitHub Repo (where the issue should be created in)
+  * Add GitHub token for authentication
+* Start the process with `node .`
+
 ## Installation Guides
 ### Creating a Discord bot
 * Simply follow the link https://discord.com/developers/applications and click on "New Application"
@@ -34,12 +45,6 @@ To be able to read data from discord, you need to create a discord bot https://d
 * Make in note, to be able to recognize this token and set the expiration date
 ** If you chose to let your token expire you must remember to renew it after expiration, otherwise GitHub will not grant access for the request of the bot
 * Scopes: `repo`, `write:packages`
-
-### Start the bot
-* Install NodeJS 16+
-* Execute command `npm i` in the root folder of the project
-* Set up "config.json" with required parameters (you can use and rename the template of "example.config.json")
-* Start the process with `node .`
 
 <hr />
 
