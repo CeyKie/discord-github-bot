@@ -1,105 +1,97 @@
 ﻿// Require the necessary discord.js classes
-const { Client, Intents } = require('discord.js');
+const Discord = require('discord.js');
 const request = require('request');
-const { token, channelId, updateIntervallSeconds, gitUser, gitRepo, gitToken, exludeUsers, includeAttachments } = require('./config.json');
+const config = require('./config.json');
 
 // Checks, if required information are given
-isSet(token, "token");
-isSet(channelId, "channelId");
-isSet(gitUser, "gitUser");
-isSet(gitRepo, "gitRepo");
-isSet(gitToken, "gitToken");
+isSet(config.token, "token");
+isSet(config.channelId, "channelId");
+isSet(config.gitUser, "gitUser");
+isSet(config.gitRepo, "gitRepo");
+isSet(config.gitToken, "gitToken");
 
 // Concat repo link with the given Github user and Github repo
-const issueLink = "https://api.github.com/repos/" + gitUser + "/" + gitRepo + "/issues";
+const issueLink = "https://api.github.com/repos/" + config.gitUser + "/" + config.gitRepo + "/issues";
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
-
-// Check if update intervall is configured, otherwise use default (15 seconds)
-const fetchIntervall = updateIntervallSeconds ? updateIntervallSeconds * 1000 : 15 * 1000;
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });
 
 // Check if includeAttachments was set in the configuration. If not it will be set to false as default.
-const useAttachments = includeAttachments ? includeAttachments : false;
+const useAttachments = config.includeAttachments ? config.includeAttachments : false;
+
+const successMessage = config.successMessage ? config.successMessage : 'Your issue was successfully created. We will work on it asap.';
 
 // Login to Discord with your client's token.
 // Using async call to work the data, otherwise there is a chance, that the bot is not logged in yet.
-client.login(token)
-	.then(clientLogin => {
-		console.log('Bot logged in');
-		fetchChannel(clientLogin)
+client.login(config.token)
+	.then(() => {
+		console.log(`Bot ${client.user.tag} logged in`);
+		fetchChannel()
 	})
 	.catch(console.error);
 
 /**
  * Fetch channel info to get more data such as messages or author etc.
- * 
- * @param {any} login Client (bot) that has logged in to the discord server
  */
-function fetchChannel(login) {
-	client.channels.fetch(channelId)
-		.then(channel => fetchMessagesFromChannel(channel))
+function fetchChannel() {
+	client.channels.fetch(config.channelId)
+		.then(channel => {
+			fetchMessagesFromChannel(channel)
+		})
 		.catch(console.error);
 }
 
 /**
- * Fetch all messages from the given channel to interact with the messages.
- * This body of this method is called periodically.
+ * Collects messages, that are written in to the configured channel.
+ * The message collector watches a channel for new messages.
  * 
  * @param {any} channel Discord channel fetched from the server by ID
  */
 function fetchMessagesFromChannel(channel) {
-	if (channel.type === 'GUILD_TEXT') {
-		setInterval(function () {
-			channel.messages
-				.fetch()
-				.then(messages => fetchMessage(messages))
-				.catch(console.error);
-		}, fetchIntervall);
-    }
+	const collector = channel.createMessageCollector();
+	collector.on('collect', message => {
+		getMessage(message, channel);
+	});
 }
 
 /**
- * Fetch data from a single message to upload the info to github as an issue.
+ * Get data from a single message to upload the info to github as an issue.
  * 
  * @param {any} messages All messages from the chosen discord channel
+ * @param {any} channel Discord channel fetched from the server by ID
  */
-function fetchMessage(messages) {
-	messages.forEach(msg => {
-		// Make sure an issue will only be created,
-		// when the author is not exluded in the configuration
-		const authorNotExcluded = !exludeUsers.includes(msg.author.id)
+function getMessage(message, channel) {
+	// Make sure an issue will only be created,
+	// when the author is not exluded in the configuration
+	const authorNotExcluded = !config.exludeUsers.includes(message.author.id)
 
-		// TODO: Find a solution to save images, so the message in discord can be deleted to keep it clean
-		const notProcessed = !hasReacted(msg.reactions);
-
-		if (authorNotExcluded && notProcessed) {
-			let attachments = '';
-			if (useAttachments) {
-				attachments = includeImages(msg.attachments);
-			}
-
-			let contentText = msg.content.split('\n')
-			let title = getTitle(contentText);
-			let message = getMessage(contentText, msg.author.username, attachments);
-
-			// Creating the github issue from the message
-			createGithubIssue(title, message, msg);
+	if (authorNotExcluded) {
+		let attachments = '';
+		if (useAttachments) {
+			attachments = includeImages(message.attachments);
 		}
-	})
+
+		let contentText = message.content.split('\n')
+		let title = getTitle(contentText);
+		let content = createGitHubContent(contentText, message.author.username, attachments);
+
+		// Creating the github issue from the message
+		createGitHubIssue(title, content, message, channel);
+	}
 }
 
 /**
- * Create an Github issue with the authentication and URL from the configuration
+ * Create a Github issue with the authentication and URL from the configuration
  * and the title and message from the discord message.
  * Marks the message in discord with a check mark, in case it was successfully created in Github.
  * Otherwise an X will be reacted to the discord message.
  * 
  * @param {any} title Issue title, split from the discord message
- * @param {any} message Issue description, split from the discord message
- * @param {any} msg Message retrieved from discord
+ * @param {any} content Issue description, split from the discord message
+ * @param {any} message Message retrieved from discord
+ * @param {any} channel Discord channel fetched from the server by ID
  */
-function createGithubIssue(title, message, msg) {
+function createGitHubIssue(title, content, message, channel) {
 	request.post(
 		{
 			url: issueLink,
@@ -107,25 +99,39 @@ function createGithubIssue(title, message, msg) {
 			headers: {
 				'Content-Type': 'application/json',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer ' + gitToken,
+				'Authorization': 'Bearer ' + config.gitToken,
 				'User-Agent': 'curl/7.64.1'
 			},
 			json: {
 				'title': title,
-				'body': message,
+				'body': content,
 				'labels': [
 					'bug'
 				]
 			}
 		},
 		function (error, response, body) {
-			if (!response.statusCode.toString().startsWith('2') || error) {
-				msg.react('❌');
-			} else {
-				const author = msg.author;
-				msg.react('✅');
+			if (response.statusCode.toString().startsWith('2') && (!error || error == 'undefined' || error == '')) {
+				const author = message.author;
 				console.log('Successfully created issue with ID [' + body.number + '] by user [' + author.username + '#' + author.discriminator + '] with ID [' + author.id + ']');
-			}
+
+				if (message.deletable) {
+
+					// Send info message to user, that the issue was created successfully
+					channel.send(successMessage)
+						.then(msg => {
+							// Delete info message after 90 seconds
+							setTimeout(() => {
+								message.delete();
+								msg.delete();
+							}, 90000)
+						});
+				} else {
+					message.react('✅');
+				}
+			} else {
+				message.react('❌');
+            }
 		}
 	);
 }
@@ -157,7 +163,7 @@ function getTitle(contentText) {
  * @param {any} author Author of the discord message
  * @param {any} attachments Attachments in the discord message
  */
-function getMessage(contentText, author, attachments) {
+function createGitHubContent(contentText, author, attachments) {
 	const authorCredits = '<br /> Issue created by: ' + author;
 	//let images = "";
 	let footNote = authorCredits;
@@ -198,24 +204,6 @@ function includeImages(attachmentsFromMessage) {
 	});
 
 	return attachments;
-}
-
-/**
- * Check if the bot already processed the message by checking the reaction.
- * 
- * @param {any} reactions Reactions of the message
- */
-function hasReacted(reactions) {
-	let hasReacted = false;
-	if (reactions.resolve('✅') != null) {
-		hasReacted = reactions.resolve('✅').me;
-	}
-
-	if (!hasReacted && reactions.resolve('❌') != null) {
-		hasReacted = reactions.resolve('❌').me;
-	}
-
-	return hasReacted;
 }
 
 /**

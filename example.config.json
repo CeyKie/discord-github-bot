@@ -1,10 +1,10 @@
 {
 	"token": "",
 	"channelId": "",
-	"updateIntervallSeconds": 15,
 	"gitUser": "",
 	"gitRepo": "",
 	"gitToken": "",
 	"exludeUsers": [],
-	"includeAttachments":  false
+	"includeAttachments":  false,
+	"successMessage": ""
 }
