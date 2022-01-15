@@ -1,7 +1,7 @@
 ﻿// Require the necessary discord.js classes
 const Discord = require("discord.js");
 const request = require("request");
-const config = require("./config.json");
+const config = require("./config/config.json");
 
 // Checks, if required information are given
 isSet(config.token, "token");
