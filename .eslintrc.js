@@ -12,6 +12,7 @@ module.exports = {
         "prefer-const": ["error", {
             "destructuring": "any",
             "ignoreReadBeforeAssign": false
-        }]
+        }],
+        "quotes": [2, "single", { "avoidEscape": true }]
     }
 };

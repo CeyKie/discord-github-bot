@@ -1,14 +1,14 @@
 ﻿// Require the necessary discord.js classes
-const Discord = require("discord.js");
-const request = require("request");
-const config = require("./config/config.json");
+const Discord = require('discord.js');
+const request = require('request');
+const config = require('./config.json');
 
 // Checks, if required information are given
-isSet(config.token, "token");
-isSet(config.channelId, "channelId");
-isSet(config.gitUser, "gitUser");
-isSet(config.gitRepo, "gitRepo");
-isSet(config.gitToken, "gitToken");
+isSet(config.token, 'token');
+isSet(config.channelId, 'channelId');
+isSet(config.gitUser, 'gitUser');
+isSet(config.gitRepo, 'gitRepo');
+isSet(config.gitToken, 'gitToken');
 
 // Concat repo link with the given Github user and Github repo
 const issueLink = `https://api.github.com/repos/${config.gitUser}/${config.gitRepo}/issues`;
@@ -25,7 +25,7 @@ const useAttachments = config.includeAttachments
 
 const successMessage = config.successMessage
   ? config.successMessage
-  : "Your issue was successfully created. We will work on it asap.";
+  : 'Your issue was successfully created. We will work on it asap.';
 
 // Login to Discord with your client's token.
 // Using async call to work the data, otherwise there is a chance, that the bot is not logged in yet.
@@ -57,7 +57,7 @@ function fetchChannel() {
  */
 function fetchMessagesFromChannel(channel) {
   const collector = channel.createMessageCollector();
-  collector.on("collect", (message) => {
+  collector.on('collect', (message) => {
     getMessage(message, channel);
   });
 }
@@ -74,12 +74,12 @@ function getMessage(message, channel) {
   const authorNotExcluded = !config.exludeUsers.includes(message.author.id);
 
   if (authorNotExcluded) {
-    let attachments = "";
+    let attachments = '';
     if (useAttachments) {
       attachments = includeImages(message.attachments);
     }
 
-    const contentText = message.content.split("\n");
+    const contentText = message.content.split('\n');
     const title = getTitle(contentText);
     const content = createGitHubContent(
       contentText,
@@ -107,36 +107,30 @@ function createGitHubIssue(title, content, message, channel) {
   request.post(
     {
       url: issueLink,
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: "Bearer " + config.gitToken,
-        "User-Agent": "curl/7.64.1",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + config.gitToken,
+        'User-Agent': 'curl/7.64.1',
       },
       json: {
         title: title,
         body: content,
-        labels: ["bug"],
+        labels: ['bug'],
       },
     },
     function (error, response, body) {
       if (
-        response.statusCode.toString().startsWith("2") &&
-        (!error || error == "undefined" || error == "")
+        response.statusCode.toString().startsWith('2') &&
+        (!error || error == 'undefined' || error == '')
       ) {
         const author = message.author;
         console.log(
-          "Successfully created issue with ID [" +
-            body.number +
-            "] by user [" +
-            author.username +
-            "#" +
-            author.discriminator +
-            "] with ID [" +
-            author.id +
-            "]"
-        );
+          `Successfully created issue with ID [${body.number}] ` +
+          `by user [${author.username}#${author.discriminator}] ` +
+          `with ID [${author.id}]`
+          );
 
         if (message.deletable) {
           // Send info message to user, that the issue was created successfully
@@ -148,10 +142,10 @@ function createGitHubIssue(title, content, message, channel) {
             }, 90000);
           });
         } else {
-          message.react("✅");
+          message.react('✅');
         }
       } else {
-        message.react("❌");
+        message.react('❌');
       }
     }
   );
@@ -169,7 +163,7 @@ function getTitle(contentText) {
   let title = contentText[0];
 
   if (title.length > 128) {
-    title = title.substring(1, 128) + "...";
+    title = title.substring(1, 128) + '...';
   }
 
   return title;
@@ -187,13 +181,13 @@ function getTitle(contentText) {
  * @returns {string} returns the content for github ticket
  */
 function createGitHubContent(contentText, author, attachments) {
-  const authorCredits = "<br /> Issue created by: " + author;
-  //let images = "";
+  const authorCredits = `<br /> Issue created by: ${author}`;
+  //let images = '';
   let footNote = authorCredits;
 
   // Adding the attachments to the issue body
-  if (attachments !== "" && attachments !== "undefined") {
-    footNote += "<br /><br />" + attachments;
+  if (attachments !== '' && attachments !== 'undefined') {
+    footNote += `<br /><br /> ${attachments}`;
   }
 
   // The message has no break, therefore, not seperated in to title and description
@@ -204,7 +198,7 @@ function createGitHubContent(contentText, author, attachments) {
   // Length of the title is larger than 128 so it was split.
   // To not loose any information, the full title will also be part of the issue description
   if (contentText[0].length > 128) {
-    return contentText[0] + "<br />" + contentText[1] + footNote;
+    return `${contentText[0]} <br /> ${contentText[1]}${footNote}`;
   }
 
   // The description was successfully seperated from the title
@@ -220,10 +214,10 @@ function createGitHubContent(contentText, author, attachments) {
  * @returns {string} A string which includes all attachments
  */
 function includeImages(attachmentsFromMessage) {
-  let attachments = "";
+  let attachments = '';
 
   attachmentsFromMessage.forEach((attachment) => {
-    attachments += "![" + attachment.name + "](" + attachment.url + ")";
+    attachments += `![${attachment.name}](${attachment.url})`;
   });
 
   return attachments;
@@ -236,7 +230,7 @@ function includeImages(attachmentsFromMessage) {
  * @param {string} configString property as string
  */
 function isSet(config, configString) {
-  if (!config || config == "" || config == "undefined") {
+  if (!config || config == '' || config == 'undefined') {
     exitBot(configString);
   }
 }
@@ -247,6 +241,6 @@ function isSet(config, configString) {
  * @param {string} missingProperty String of the missing property to let the user know which property is affected
  */
 function exitBot(missingProperty) {
-  console.error("You must add " + missingProperty + " to the config.json");
+  console.error(`You must add ${missingProperty} to the config.json`);
   process.exit();
 }
