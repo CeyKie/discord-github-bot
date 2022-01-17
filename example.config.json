@@ -1,0 +1,10 @@
+{
+	"token": "",
+	"channelId": "",
+	"gitUser": "",
+	"gitRepo": "",
+	"gitToken": "",
+	"exludeUsers": [],
+	"includeAttachments":  false,
+	"successMessage": ""
+}
